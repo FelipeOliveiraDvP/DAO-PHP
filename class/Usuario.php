@@ -48,6 +48,14 @@ class Usuario {
 	}
 	//------------------------------------------------
 	//Metodos da classe
+	// popula os atributos do objeto
+	private function setData($data){
+	
+		$this->setIdusuario($data['idusuario']);
+		$this->setDeslogin($data['deslogin']);
+		$this->setDessenha($data['dessenha']);
+		$this->setDtcadastro(new DateTime($data['dtcadastro']));		
+	}
 	// carrega um registro no banco atraves de um id
 	public function loadById($id){
 		$sql = new Sql();
@@ -55,12 +63,8 @@ class Usuario {
 		$results = $sql->select("SELECT * FROM TB_USUARIOS WHERE IDUSUARIO = :ID",array(':ID'=>$id));
 		
 		if (isset($results[0])) {
-			$row = $results[0];
 
-			$this->setIdusuario($row['idusuario']);
-			$this->setDeslogin($row['deslogin']);
-			$this->setDessenha($row['dessenha']);
-			$this->setDtcadastro(new DateTime($row['dtcadastro']));
+			$this->setData($results[0]);
 		}
 	}
 	// listando usuarios
@@ -84,17 +88,38 @@ class Usuario {
 			':PASS'=>$password
 		));
 		if (isset($results[0])) {
-			$row = $results[0];
 
-			$this->setIdusuario($row['idusuario']);
-			$this->setDeslogin($row['deslogin']);
-			$this->setDessenha($row['dessenha']);
-			$this->setDtcadastro(new DateTime($row['dtcadastro']));
+			$this->setData($results[0]);
 
 		}else{
 			throw new Exception("Login ou Senha invalidos");			
 		}
+	}
+	// inserindo dados atraves de procedures
+	public function insert(){
+		$sql = new Sql();
+		$results = $sql->select("CALL sp_insert_usuario(:LOGIN, :PASS)", array(
+			':LOGIN'=>$this->getDeslogin(),
+			':PASS'=>$this->getDessenha()
+		));
 
+		if (isset($results[0])) {
+			
+			$this->setData($results[0]);
+
+		}
+	}
+	// Atualizando no banco
+	public function update($login, $pass){
+		$this->setDeslogin($login);
+		$this->setDessenha($pass);
+
+		$sql = new Sql();
+		$sql->query("UPDATE TB_USUARIOS SET deslogin=:LOGIN, dessenha=:PASS WHERE idusuario=:ID", array(
+			':LOGIN'=>$this->getDeslogin(),
+			':PASS'=>$this->getDessenha(),
+			':ID'=>$this->getIdusuario()
+		));
 	}
 	// To string
 	public function __toString(){
