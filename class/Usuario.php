@@ -121,6 +121,18 @@ class Usuario {
 			':ID'=>$this->getIdusuario()
 		));
 	}
+	// excluindo objetos do banco
+	public function delete(){
+		$sql = new Sql();
+		$sql->query("DELETE FROM TB_USUARIOS WHERE idusuario=:ID", array(
+			':ID'=>$this->getIdusuario()
+		));
+
+		$this->setIdusuario(null);
+		$this->setDeslogin(null);
+		$this->setDessenha(null);
+		$this->setDtcadastro(new DateTime());
+	}
 	// To string
 	public function __toString(){
 

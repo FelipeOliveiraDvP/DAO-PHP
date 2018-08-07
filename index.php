@@ -32,10 +32,16 @@ $aluno->insert();
 echo $aluno;
 */
 
-/* ATualizando um registro no banco */
+/* ATualizando um registro no banco 
 $user = new Usuario();
 $user->loadById(2);
 $user->update("Professor","guest66998");
 
 echo $user;
+*/
+
+/* escluindo usuario */
+$user = new Usuario();
+$user->loadById(5);
+$user->delete();
  ?>
